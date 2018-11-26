@@ -1,0 +1,69 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+h2,
+h3 {
+  margin: 10px;
+  font-size: 1.2em;
+}
+
+h3 {
+  font-size: 1em;
+}
+
+p {
+  font-size: 0.85em;
+  margin: 10px;
+  text-align: left;
+}
+
+/**
+* Create a position for the map
+* on the page */
+#map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%
+}
+
+/**
+* Set rules for how the map overlays
+* on the page. */
+.map-overlay {
+  position: absolute;
+  bottom: 100px;
+  right: 0;
+  background: rgba(255, 255, 255, 0.2);
+  margin-right: 325px;
+  font-family: Arial, sans-serif;
+  overflow: auto;
+  border-radius: 100px;
+}
+
+#features {
+  top: 0;
+  height: 30px;
+  margin-top: 20px;
+  width: 320px;
+}
+
+#legend {
+  padding: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  line-height: 18px;
+  height: 200px;
+  margin-bottom: 50px;
+  width: 100px;
+}
+
+.legend-key {
+  display: inline-block;
+  border-radius: 100%;
+  width: 10px;
+  height: 10px;
+  margin-right: 5px;
+}

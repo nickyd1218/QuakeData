@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Earthquakes Around the World</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.css' rel='stylesheet' />
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+
+<div id='map'></div>
+<!-- API key -->
+<script type="text/javascript" src="config.js"></script>
+<!-- JS -->
+<script type="text/javascript" src="logic.js"></script>
+<div class='map-overlay' id='features'><h2>Worldwide Earthquake Map Data</h2><div id='pd'></div></div>
+<div class='map-overlay' id='legend'><h2>Richter Scale Rating</h2></div>
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoibWFuYWhhbm1hcmN1czIxIiwiYSI6ImNqbmNobWUxMzAxOWQzbG02eWo2N2ExbW0ifQ.-GQYh91iLzJ51viejCfuiA';
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/light-v9',
+    center: [-10,33],
+    zoom: 1
+});
+
+map.on('load', function() {
+    var layers = ['0-1', '1-2', '2-3', '3-4', '4-5', '5-6'];
+var colors = ["rgb(0, 255, 0)",
+                "rgb(255, 102, 153)",
+                "rgb(42, 82, 190)",
+                "rgb(255,244,79)",
+                "rgb(255,165,0)",
+                "rgb(180,16,48)"];
+    for (i = 0; i < layers.length; i++) {
+
+
+  var layer = layers[i];
+  var color = colors[i];
+  var item = document.createElement('div');
+  var key = document.createElement('span');
+  key.className = 'legend-key';
+  key.style.backgroundColor = color;
+
+  var value = document.createElement('span');
+  value.innerHTML = layer;
+  item.appendChild(key);
+  item.appendChild(value);
+  legend.appendChild(item);
+}
+
+    // Add a geojson point source.
+    map.addSource('earthquakes', {
+        "type": "geojson",
+        "data": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson"
+    });
+
+    map.addLayer({
+        "id": "earthquakes-heat",
+        "type": "heatmap",
+        "source": "earthquakes",
+        "maxzoom": 12,
+        "paint": {
+            // Increase the heatmap weight based on frequency and property magnitude
+            "heatmap-weight": [
+                "interpolate",
+                ["linear"],
+                ["get", "mag"],
+                0, 0,
+                6, 1
+            ],
+            // Increase the heatmap color weight weight by zoom level
+            "heatmap-intensity": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                0, 1,
+                9, 3
+            ],
+            // Color ramp for heatmap.  D 0 (low) to 1 (high).
+            // Begin color ramp at 0-stop with a 0-transparancy color
+            "heatmap-color": [
+                "interpolate",
+                ["linear"],
+                ["heatmap-density"],
+                0, "rgba(o,255,0,0)",
+                0.2, "rgb(42, 82, 190)",
+                0.4, "rgb(255, 102, 153)",
+                0.6, "rgb(255,244,79)",
+                0.8, "rgb(255,165,0)",
+                1, "rgb(180,16,48)"
+
+            ],
+            // Adjust the heatmap radius by zoom level
+            "heatmap-radius": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                0, 2,
+                9, 20
+            ],
+            // Transition from heatmap to circle layer by zoom level
+            "heatmap-opacity": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                7, 1,
+                9, 0
+            ],
+        }
+    }, 'waterway-label');
+
+    map.addLayer({
+        "id": "earthquakes-point",
+        "type": "circle",
+        "source": "earthquakes",
+        "minzoom": 1,
+        "paint": {
+            // Size circle radius by earthquake magnitude and zoom level
+            "circle-radius": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                10, [
+                    "interpolate",
+                    ["linear"],
+                    ["get", "mag"],
+                    1, 5,
+                    3, 20
+                ],
+                20, [
+                    "interpolate",
+                    ["linear"],
+                    ["get", "mag"],
+                    1, 5,
+                    6, 50
+                ]
+            ],
+            // Color circle by earthquake magnitude
+            "circle-color": [
+                "interpolate",
+                ["linear"],
+                ["get", "mag"],
+                1, "rgb(0, 179, 0)",
+                2, "rgb(42, 82, 190)",
+                3, "rgb(255, 102, 153)",
+                4, "rgb(255,244,79)",
+                5, "rgb(255,165,0)",
+                6, "rgb(158,16,48)"
+            ],
+        }
+    }, 'waterway-label');
+
+});
+</script>
+</body>
+</html>
